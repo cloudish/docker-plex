@@ -1,0 +1,44 @@
+#!/usr/bin/with-contenv bash
+
+#initialized variables
+continue='true'
+exitMessage="Required environment variables have been set. Will not mount cifs shares. Exiting."
+
+#check if all the required environment vars have been set
+#if not, bounce but with an exit 0 as cifs shares are not required
+[[ -z $CIFS_SHARES ]] && echo $exitMessage && exit 0
+[[ -z $CIFS_USERNAME ]] && echo $exitMessage && exit 0
+[[ -z $CIFS_PASSWORD ]] && echo $exitMessage && exit 0
+
+echo "CIFS_USERNAME: $CIFS_USERNAME"
+echo "CIFS_PASSWORD: $CIFS_PASSWORD"
+echo "CIFS_SHARES: $CIFS_SHARES"
+
+#split the string on : and iterate.
+#also uses regex to pull out the end of the share path to name the mount 
+IFS=':' read -ra ADDR <<< "$CIFS_SHARES"
+for share in "${ADDR[@]}"; do
+
+  echo "Processing Share: $share"
+
+  regEx="\/([^\/]+$)"
+  if [[ $share =~ $regEx ]]; then
+
+    #set up the path to mount
+    mountName=${BASH_REMATCH[1]}
+    mountPath="/mnt/cifs-shares/$mountName"
+
+    #ready to start mounting process
+    echo "mountName: $mountName"
+    echo "mountPath: $mountPath"
+
+    if grep -qs $mountPath /proc/mounts; then
+        echo "Path $mountPath already mounted."
+    else
+        mkdir -p $mountPath
+        echo "Created directory $mountPath for mounting."
+    fi
+    echo "Mounting..."
+    mount -t cifs -o username=$CIFS_USERNAME,password=$CIFS_PASSWORD $share $mountPath   
+  fi
+done
