@@ -41,6 +41,6 @@ for share in "${ADDR[@]}"; do
         echo "Created directory $mountPath for mounting."
     fi
     echo "Mounting..."
-    mount -t cifs -o username=$CIFS_USERNAME,password=$CIFS_PASSWORD,uid=$PUID,gid=$PGID $share $mountPath
+    mount -t cifs -o username=$CIFS_USERNAME,password=$CIFS_PASSWORD,uid=$PUID,gid=$PGID,sec=ntlm $share $mountPath
   fi
 done
