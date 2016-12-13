@@ -15,7 +15,8 @@ RUN \
  apt-get install -y \
 	avahi-daemon \
 	dbus \
-	wget && \
+	wget \
+	cifs-utils && \
 
 # install plex
  curl -o \
