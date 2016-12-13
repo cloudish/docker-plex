@@ -37,7 +37,7 @@ for share in "${ADDR[@]}"; do
     else
         mkdir -p $mountPath
         chown ${PUID:-abc}:${PGID:-abc} $mountPath
-        chmod $(CIFS_MOUNT_PERMS:-755} $mountPath
+        chmod ${CIFS_MOUNT_PERMS:-755} $mountPath
         echo "Created directory $mountPath for mounting."
     fi
     echo "Mounting..."
